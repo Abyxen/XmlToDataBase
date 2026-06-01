@@ -36,6 +36,7 @@
             dataGridView1 = new DataGridView();
             txtenterid = new TextBox();
             lblID = new Label();
+            textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -105,12 +106,20 @@
             lblID.TabIndex = 5;
             lblID.Text = "Enter ID";
             // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(170, 50);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(100, 23);
+            textBox1.TabIndex = 6;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
             ClientSize = new Size(613, 432);
+            Controls.Add(textBox1);
             Controls.Add(lblID);
             Controls.Add(txtenterid);
             Controls.Add(dataGridView1);
@@ -134,5 +143,6 @@
         private DataGridView dataGridView1;
         private TextBox txtenterid;
         private Label lblID;
+        private TextBox textBox1;
     }
 }
