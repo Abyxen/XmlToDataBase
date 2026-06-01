@@ -43,16 +43,17 @@
             // 
             // btnLoad
             // 
-            btnLoad.Location = new Point(399, 116);
+            btnLoad.Location = new Point(50, 51);
             btnLoad.Name = "btnLoad";
             btnLoad.Size = new Size(75, 23);
             btnLoad.TabIndex = 0;
             btnLoad.Text = "Load";
             btnLoad.UseVisualStyleBackColor = true;
+            btnLoad.Click += btnLoad_Click;
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(252, 326);
+            btnDelete.Location = new Point(224, 51);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
             btnDelete.TabIndex = 1;
@@ -61,7 +62,7 @@
             // 
             // btnRestore
             // 
-            btnRestore.Location = new Point(435, 326);
+            btnRestore.Location = new Point(447, 51);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(75, 23);
             btnRestore.TabIndex = 2;
@@ -72,7 +73,7 @@
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(12, 386);
+            dataGridView1.Location = new Point(12, 102);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.Size = new Size(577, 405);
             dataGridView1.TabIndex = 3;
@@ -82,7 +83,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            ClientSize = new Size(613, 819);
+            ClientSize = new Size(613, 518);
             Controls.Add(dataGridView1);
             Controls.Add(btnRestore);
             Controls.Add(btnDelete);
