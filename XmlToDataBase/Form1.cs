@@ -18,13 +18,18 @@ namespace XmlToDataBase
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-         
+
             openFileDialog1.Filter = "XML Files (*.xml)|*.xml";
 
-            
+
             string xmlPath = "";
 
             openFileDialog1.Multiselect = false;
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
