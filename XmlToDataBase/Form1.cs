@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic; 
+using System.Data;
 using System.Windows.Forms;
 
 namespace XmlToDataBase
@@ -6,6 +8,7 @@ namespace XmlToDataBase
     public partial class Form1 : Form
     {
         private string xmlPath = string.Empty;
+        List<DataRow> backupRows = new List<DataRow>(); 
 
         public Form1()
         {
@@ -24,24 +27,75 @@ namespace XmlToDataBase
                     xmlPath = openFileDialog.FileName;
                     textBox1.Text = xmlPath;
 
-                    MessageBox.Show("File loaded successfully!");
+                    try
+                    {
+                        DataSet dataSet = new DataSet();
+                        dataSet.ReadXml(xmlPath);
+
+                        if (dataSet.Tables.Count > 0)
+                        {
+                            dataGridView1.DataSource = dataSet.Tables[0];
+                        }
+                    }
+                    catch
+                    {
+                    }
                 }
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            
-            xmlPath = string.Empty;
-            textBox1.Clear();
+            string idToDelete = txtenterid.Text;
+            try
+            {
+                
+                DataTable dt = (DataTable)dataGridView1.DataSource;
 
-            MessageBox.Show("Selection cleared.");
+                for (int i = dt.Rows.Count - 1; i >= 0; i--)
+                {
+                   
+                    if (dt.Rows[i]["id"].ToString() == idToDelete)
+                    {
+                        DataRow backupRow = dt.NewRow();
+                        backupRow.ItemArray = dt.Rows[i].ItemArray;
+                        backupRows.Add(backupRow);
+
+                        dt.Rows.RemoveAt(i);
+                    }
+                }
+
+                dt.WriteXml(xmlPath);
+            }
+            catch
+            {
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-           
-            MessageBox.Show("Not implemented yet.");
+            string idToRestore = txtenterid.Text;
+            try
+            {
+               
+                DataTable dt = (DataTable)dataGridView1.DataSource;
+
+                for (int i = backupRows.Count - 1; i >= 0; i--)
+                {
+                    
+                    if (backupRows[i]["id"].ToString() == idToRestore)
+                    {
+                        dt.Rows.Add(backupRows[i].ItemArray);
+                        backupRows.RemoveAt(i);
+
+                        dt.WriteXml(xmlPath);
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+            }
         }
     }
 }
