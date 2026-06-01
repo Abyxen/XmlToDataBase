@@ -34,6 +34,8 @@
             btnDelete = new Button();
             btnRestore = new Button();
             dataGridView1 = new DataGridView();
+            txtenterid = new TextBox();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -53,7 +55,7 @@
             // 
             // btnDelete
             // 
-            btnDelete.Location = new Point(224, 51);
+            btnDelete.Location = new Point(307, 372);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
             btnDelete.TabIndex = 1;
@@ -62,7 +64,7 @@
             // 
             // btnRestore
             // 
-            btnRestore.Location = new Point(447, 51);
+            btnRestore.Location = new Point(436, 372);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(75, 23);
             btnRestore.TabIndex = 2;
@@ -75,15 +77,33 @@
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(12, 102);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(577, 405);
+            dataGridView1.Size = new Size(577, 244);
             dataGridView1.TabIndex = 3;
+            // 
+            // txtenterid
+            // 
+            txtenterid.Location = new Point(144, 377);
+            txtenterid.Name = "txtenterid";
+            txtenterid.Size = new Size(100, 23);
+            txtenterid.TabIndex = 4;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(50, 380);
+            label1.Name = "label1";
+            label1.Size = new Size(48, 15);
+            label1.TabIndex = 5;
+            label1.Text = "Enter ID";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            ClientSize = new Size(613, 518);
+            ClientSize = new Size(613, 432);
+            Controls.Add(label1);
+            Controls.Add(txtenterid);
             Controls.Add(dataGridView1);
             Controls.Add(btnRestore);
             Controls.Add(btnDelete);
@@ -92,6 +112,7 @@
             Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -102,5 +123,7 @@
         private Button btnDelete;
         private Button btnRestore;
         private DataGridView dataGridView1;
+        private TextBox txtenterid;
+        private Label label1;
     }
 }

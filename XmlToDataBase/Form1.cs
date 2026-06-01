@@ -24,14 +24,7 @@ namespace XmlToDataBase
             
             string xmlPath = "";
 
-            
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                xmlPath = openFileDialog1.FileName;
-                textBox1.Text = xmlPath;
-
-                MessageBox.Show("File loaded successfully!");
-            }
+            openFileDialog1.Multiselect = false;
         }
     }
 }
