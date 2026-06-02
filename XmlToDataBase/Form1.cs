@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -8,7 +8,7 @@ namespace XmlToDataBase
     public partial class Form1 : Form
     {
         private string xmlPath = string.Empty;
-        List<DataRow> backupRows = new List<DataRow>(); 
+        private string backupFile = "backup.xml";
 
         public Form1()
         {
@@ -47,19 +47,24 @@ namespace XmlToDataBase
         private void btnDelete_Click(object sender, EventArgs e)
         {
             string idToDelete = txtenterid.Text;
+
             try
             {
-                
                 DataTable dt = (DataTable)dataGridView1.DataSource;
 
                 for (int i = dt.Rows.Count - 1; i >= 0; i--)
                 {
-                   
                     if (dt.Rows[i]["id"].ToString() == idToDelete)
                     {
-                        DataRow backupRow = dt.NewRow();
-                        backupRow.ItemArray = dt.Rows[i].ItemArray;
-                        backupRows.Add(backupRow);
+                        DataTable backupTable = dt.Clone();
+
+                        if (System.IO.File.Exists(backupFile))
+                        {
+                            backupTable.ReadXml(backupFile);
+                        }
+
+                        backupTable.Rows.Add(dt.Rows[i].ItemArray);
+                        backupTable.WriteXml(backupFile);
 
                         dt.Rows.RemoveAt(i);
                     }
@@ -75,20 +80,29 @@ namespace XmlToDataBase
         private void button3_Click(object sender, EventArgs e)
         {
             string idToRestore = txtenterid.Text;
+
             try
             {
-               
                 DataTable dt = (DataTable)dataGridView1.DataSource;
 
-                for (int i = backupRows.Count - 1; i >= 0; i--)
+                DataTable backupTable = dt.Clone();
+
+                if (System.IO.File.Exists(backupFile))
                 {
-                    
-                    if (backupRows[i]["id"].ToString() == idToRestore)
+                    backupTable.ReadXml(backupFile);
+                }
+
+                for (int i = backupTable.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (backupTable.Rows[i]["id"].ToString() == idToRestore)
                     {
-                        dt.Rows.Add(backupRows[i].ItemArray);
-                        backupRows.RemoveAt(i);
+                        dt.Rows.Add(backupTable.Rows[i].ItemArray);
+
+                        backupTable.Rows.RemoveAt(i);
 
                         dt.WriteXml(xmlPath);
+                        backupTable.WriteXml(backupFile);
+
                         break;
                     }
                 }
