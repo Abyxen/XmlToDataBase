@@ -99,7 +99,7 @@
             txtenterid.Location = new Point(155, 500);
             txtenterid.Margin = new Padding(3, 4, 3, 4);
             txtenterid.Name = "txtenterid";
-            txtenterid.Size = new Size(114, 27);
+            txtenterid.Size = new Size(140, 27);
             txtenterid.TabIndex = 4;
             // 
             // lblID
