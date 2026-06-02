@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Xml Manager Setup/Xml Manager Setup.vdproj" Type="Installer" />
   <Project Path="XmlToDataBase/XmlToDataBase.csproj" />
 </Solution>
