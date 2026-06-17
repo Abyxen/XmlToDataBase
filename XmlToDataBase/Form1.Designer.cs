@@ -48,84 +48,78 @@
             // btnLoad
             // 
             btnLoad.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            btnLoad.Font = new Font("Unispace", 11.25F, FontStyle.Bold);
-            btnLoad.Location = new Point(475, 61);
-            btnLoad.Margin = new Padding(3, 4, 3, 4);
+            btnLoad.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btnLoad.Location = new Point(416, 46);
             btnLoad.Name = "btnLoad";
-            btnLoad.Size = new Size(130, 37);
+            btnLoad.Size = new Size(114, 28);
             btnLoad.TabIndex = 0;
             btnLoad.Text = "Load";
             btnLoad.UseVisualStyleBackColor = true;
-            btnLoad.Click += btnLoad_Click;
+            btnLoad.Click += BtnLoad_Click;
             // 
             // btnDelete
             // 
             btnDelete.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            btnDelete.Font = new Font("Unispace", 11.25F, FontStyle.Bold);
-            btnDelete.Location = new Point(350, 493);
-            btnDelete.Margin = new Padding(3, 4, 3, 4);
+            btnDelete.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btnDelete.Location = new Point(306, 370);
             btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(130, 37);
+            btnDelete.Size = new Size(114, 28);
             btnDelete.TabIndex = 1;
             btnDelete.Text = "Delete";
             btnDelete.UseVisualStyleBackColor = true;
-            btnDelete.Click += btnDelete_Click;
+            btnDelete.Click += BtnDelete_Click;
             // 
             // btnRestore
             // 
             btnRestore.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            btnRestore.Font = new Font("Unispace", 11.25F, FontStyle.Bold);
-            btnRestore.Location = new Point(498, 489);
-            btnRestore.Margin = new Padding(3, 4, 3, 4);
+            btnRestore.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btnRestore.Location = new Point(436, 367);
             btnRestore.Name = "btnRestore";
-            btnRestore.Size = new Size(130, 37);
+            btnRestore.Size = new Size(114, 28);
             btnRestore.TabIndex = 2;
             btnRestore.Text = "Restore";
             btnRestore.UseVisualStyleBackColor = true;
-            btnRestore.Click += button3_Click;
+            btnRestore.Click += BtnRestore_Click;
             // 
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(14, 136);
-            dataGridView1.Margin = new Padding(3, 4, 3, 4);
+            dataGridView1.Location = new Point(12, 102);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(659, 325);
+            dataGridView1.Size = new Size(577, 244);
             dataGridView1.TabIndex = 3;
             // 
             // txtenterid
             // 
-            txtenterid.Location = new Point(155, 500);
-            txtenterid.Margin = new Padding(3, 4, 3, 4);
+            txtenterid.Location = new Point(136, 375);
             txtenterid.Name = "txtenterid";
-            txtenterid.Size = new Size(140, 27);
+            txtenterid.Size = new Size(123, 23);
             txtenterid.TabIndex = 4;
             // 
             // lblID
             // 
             lblID.AutoSize = true;
-            lblID.Font = new Font("Unispace", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblID.Location = new Point(34, 503);
+            lblID.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblID.Location = new Point(30, 377);
             lblID.Name = "lblID";
-            lblID.Size = new Size(106, 23);
+            lblID.Size = new Size(69, 18);
             lblID.TabIndex = 5;
             lblID.Text = "Enter ID";
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(34, 67);
-            textBox1.Margin = new Padding(3, 4, 3, 4);
+            textBox1.Location = new Point(30, 50);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(416, 27);
+            textBox1.Size = new Size(364, 23);
             textBox1.TabIndex = 6;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            ClientSize = new Size(701, 576);
+            ClientSize = new Size(613, 432);
             Controls.Add(textBox1);
             Controls.Add(lblID);
             Controls.Add(txtenterid);
@@ -134,7 +128,6 @@
             Controls.Add(btnDelete);
             Controls.Add(btnLoad);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dados>
+  <pessoa>
+    <id>1</id>
+    <nome>Ana Costa</nome>
+    <idade>28</idade>
+    <cidade>Lisboa</cidade>
+  </pessoa>
+  <pessoa>
+    <id>2</id>
+    <nome>Bruno Silva</nome>
+    <idade>34</idade>
+    <cidade>Porto</cidade>
+  </pessoa>
+  <pessoa>
+    <id>3</id>
+    <nome>Carla Mendes</nome>
+    <idade>22</idade>
+    <cidade>Coimbra</cidade>
+  </pessoa>
+  <pessoa>
+    <id>4</id>
+    <nome>Diogo Santos</nome>
+    <idade>41</idade>
+    <cidade>Faro</cidade>
+  </pessoa>
+  <pessoa>
+    <id>5</id>
+    <nome>Eva Pereira</nome>
+    <idade>30</idade>
+    <cidade>Braga</cidade>
+  </pessoa>
+</dados>
