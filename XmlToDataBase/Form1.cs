@@ -1,238 +1,195 @@
+using MySql.Data.MySqlClient;
+using System;
 using System.Data;
-using Microsoft.Data.Sqlite;
+using System.IO;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace XmlToDataBase
 {
     public partial class Form1 : Form
     {
-        private string dbPath = string.Empty;
-        private const string MainTable = "records";
-        private const string BackupTable = "records_backup";
-        private string ConnectionString => $"Data Source={dbPath}";
+        private string connectionString =
+            "server=localhost;port=3307;user=root;password=aeap2025;database=estagio;";
+
+        private string backupPath = "backup.xml";
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void BtnLoad_Click(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            using OpenFileDialog ofd = new()
-            {
-                Filter = "XML Files (*.xml)|*.xml|SQLite DB (*.db)|*.db",
-                Title = "Seleciona XML (para importar) ou .db (para abrir)"
-            };
+            LoadData();
+        }
 
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-
-            string path = ofd.FileName;
-            textBox1.Text = path;
-
+      
+        // LOAD GRID...
+      
+        private void LoadData()
+        {
             try
             {
-                if (path.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    dbPath = Path.ChangeExtension(path, ".db");
+                    conn.Open();
 
-                    if (File.Exists(dbPath))
-                    {
-                        var r = MessageBox.Show(
-                            $"O ficheiro {Path.GetFileName(dbPath)} ja existe.\nSubstituir?",
-                            "Confirmar",
-                            MessageBoxButtons.YesNo);
+                    string query = "SELECT * FROM user_id";
 
-                        if (r != DialogResult.Yes)
-                        {
-                            dbPath = path;
-                        }
-                        else
-                        {
-                            File.Delete(dbPath);
-                        }
-                    }
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                    DataTable dt = new DataTable();
 
-                    if (!File.Exists(dbPath))
-                    {
-                        ImportXmlToSqlite(path, dbPath);
-                    }
+                    adapter.Fill(dt);
+
+                    dataGridView1.DataSource = dt;
                 }
-                else
-                {
-                    dbPath = path;
-                }
-
-                RefreshGrid();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Erro a carregar");
+                MessageBox.Show("Erro: " + ex.Message);
             }
         }
 
-        private static void ImportXmlToSqlite(string xmlPath, string targetDb)
+       
+        // SEARCH 
+    
+        private void BtnSearch_Click(object sender, EventArgs e)
         {
-            DataSet ds = new();
-            ds.ReadXml(xmlPath);
-            if (ds.Tables.Count == 0)
+            
+            string id = txtenterid.Text.Trim();
+
+            if (string.IsNullOrEmpty(id))
             {
-                MessageBox.Show("O XML nao contem tabelas.", "Erro", MessageBoxButtons.OK);
+               
+                LoadData();
                 return;
             }
 
-            DataTable src = ds.Tables[0];
-
-            string columnDefs = string.Join(", ",
-                src.Columns.Cast<DataColumn>()
-                    .Select(c => $"\"{c.ColumnName}\" {MapType(c.DataType)}"));
-
-            using SqliteConnection conn = new($"Data source={targetDb}");
-            conn.Open();
-
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText =
-                    $"CREATE TABLE \"{MainTable}\" ({columnDefs});" +
-                    $"CREATE TABLE \"{BackupTable}\" ({columnDefs});";
-                cmd.ExecuteNonQuery();
-            }
-
-            using var tx = conn.BeginTransaction();
-            using var insert = conn.CreateCommand();
-            insert.Transaction = tx;
-
-            string colList = string.Join(", ", src.Columns.Cast<DataColumn>().Select(c => $"\"{c.ColumnName}\""));
-            string paramList = string.Join(", ", Enumerable.Range(0, src.Columns.Count).Select(i => $"@p{i}"));
-
-            insert.CommandText =
-                $"INSERT INTO \"{MainTable}\" ({colList}) VALUES ({paramList})";
-
-            for (int i = 0; i < src.Columns.Count; i++)
-            {
-                insert.Parameters.Add(new SqliteParameter($"@p{i}", DBNull.Value));
-            }
-
-            foreach (DataRow row in src.Rows)
-            {
-                for (int i = 0; i < src.Columns.Count; i++)
-                    insert.Parameters[i].Value = row[i] ?? DBNull.Value;
-                insert.ExecuteNonQuery();
-            }
-
-            tx.Commit();
-        }
-
-        private void RefreshGrid()
-        {
-            if (string.IsNullOrEmpty(dbPath) || !File.Exists(dbPath)) return;
-
-            using SqliteConnection conn = new(ConnectionString);
-            conn.Open();
-
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT * FROM \"{MainTable}\";";
-
-            using var reader = cmd.ExecuteReader();
-            DataTable dt = new();
-            dt.Load(reader);
-            dataGridView1.DataSource = dt;
-        }
-
-        private static string MapType(Type t)
-        {
-            if (t == typeof(int) || t == typeof(long) || t == typeof(short))
-                return "INTEGER";
-            if (t == typeof(double) || t == typeof(float) || t == typeof(decimal))
-                return "REAL";
-            if (t == typeof(bool)) return "INTEGER";
-            if (t == typeof(byte[])) return "BLOB";
-            return "TEXT";
-        }
-
-        private void BtnDelete_Click(object sender, EventArgs e)
-        {
-            string id = txtenterid.Text.Trim();
-            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(dbPath)) return;
-
             try
             {
-                using SqliteConnection conn = new(ConnectionString);
-                conn.Open();
-                using var tx = conn.BeginTransaction();
-
-                using (var copy = conn.CreateCommand())
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    copy.Transaction = tx;
-                    copy.CommandText =
-                        $"INSERT INTO \"{BackupTable}\" " +
-                        $"SELECT * FROM \"{MainTable}\" WHERE id = @id;";
-                    copy.Parameters.AddWithValue("@id", id);
-                    copy.ExecuteNonQuery();
+                    conn.Open();
+
+                    string query =
+                        "SELECT * FROM user_id WHERE iduser_id = @id";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                MessageBox.Show(
+                                    "ID: " + reader["iduser_id"].ToString(),
+                                    "Resultado da Pesquisa"
+                                );
+                            }
+                            else
+                            {
+                                MessageBox.Show("Utilizador não encontrado.");
+                            }
+                        }
+                    }
                 }
-
-                int removed;
-                using (var del = conn.CreateCommand())
-                {
-                    del.Transaction = tx;
-                    del.CommandText =
-                        $"DELETE FROM \"{MainTable}\" WHERE id = @id;";
-                    del.Parameters.AddWithValue("@id", id);
-                    removed = del.ExecuteNonQuery();
-                }
-
-                tx.Commit();
-
-                if (removed == 0)
-                    MessageBox.Show($"Nenhum registo com id = {id}.");
-
-                RefreshGrid();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Erro a apagar");
+                MessageBox.Show("Erro: " + ex.Message);
             }
         }
 
+    
+        // BACKUP XML
+    
+        private void BtnBackup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "XML (*.xml)|*.xml";
+                sfd.FileName = "Backup.xml";
+
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                DataTable dt = new DataTable();
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string query = "SELECT * FROM user_id";
+
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                    adapter.Fill(dt);
+                }
+
+                DataSet ds = new DataSet("dados");
+                dt.TableName = "user_id";
+                ds.Tables.Add(dt);
+
+                ds.WriteXml(sfd.FileName);
+
+                MessageBox.Show("Backup feito com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro backup: " + ex.Message);
+            }
+        }
+
+        // RESTORE XML
+      
         private void BtnRestore_Click(object sender, EventArgs e)
         {
-            string id = txtenterid.Text.Trim();
-            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(dbPath)) return;
-
             try
             {
-                using SqliteConnection conn = new(ConnectionString);
-                conn.Open();
-                using var tx = conn.BeginTransaction();
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "XML (*.xml)|*.xml";
 
-                using (var copy = conn.CreateCommand())
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                DataSet ds = new DataSet();
+                ds.ReadXml(ofd.FileName);
+
+                if (ds.Tables.Count == 0)
                 {
-                    copy.Transaction = tx;
-                    copy.CommandText =
-                        $"INSERT INTO \"{MainTable}\" " +
-                        $"SELECT * FROM \"{BackupTable}\" WHERE id = @id;";
-                    copy.Parameters.AddWithValue("@id", id);
-                    copy.ExecuteNonQuery();
+                    MessageBox.Show("Backup vazio.");
+                    return;
                 }
 
-                int restored;
-                using (var del = conn.CreateCommand())
+                DataTable dt = ds.Tables[0];
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    del.Transaction = tx;
-                    del.CommandText =
-                        $"DELETE FROM \"{BackupTable}\" WHERE id = @id;";
-                    del.Parameters.AddWithValue("@id", id);
-                    restored = del.ExecuteNonQuery();
+                    conn.Open();
+
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        string query =
+                            @"INSERT INTO user_id (iduser_id)
+                              VALUES (@id)
+                              ON DUPLICATE KEY UPDATE iduser_id=@id;";
+
+                        using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@id", row["iduser_id"]);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
 
-                tx.Commit();
-
-                if (restored == 0)
-                    MessageBox.Show($"Nenhum registo no backup com id = {id}.");
-
-                RefreshGrid();
+                LoadData();
+                MessageBox.Show("Restaurado com sucesso.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Erro a restaurar");
+                MessageBox.Show("Erro restore: " + ex.Message);
             }
         }
     }

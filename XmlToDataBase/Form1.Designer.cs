@@ -31,52 +31,44 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
-            btnLoad = new Button();
-            btnDelete = new Button();
+            btnSearch = new Button();
+            btnBackup = new Button();
             btnRestore = new Button();
             dataGridView1 = new DataGridView();
             txtenterid = new TextBox();
             lblID = new Label();
-            textBox1 = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
-            // openFileDialog1
+            // btnSearch
             // 
-            openFileDialog1.FileName = "openFileDialog1";
+            btnSearch.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btnSearch.Location = new Point(265, 25);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new Size(114, 28);
+            btnSearch.TabIndex = 1;
+            btnSearch.Text = "Search";
+            btnSearch.UseVisualStyleBackColor = true;
+            btnSearch.Click += BtnSearch_Click;
             // 
-            // btnLoad
+            // btnBackup
             // 
-            btnLoad.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            btnLoad.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
-            btnLoad.Location = new Point(416, 46);
-            btnLoad.Name = "btnLoad";
-            btnLoad.Size = new Size(114, 28);
-            btnLoad.TabIndex = 0;
-            btnLoad.Text = "Load";
-            btnLoad.UseVisualStyleBackColor = true;
-            btnLoad.Click += BtnLoad_Click;
-            // 
-            // btnDelete
-            // 
-            btnDelete.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            btnDelete.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
-            btnDelete.Location = new Point(306, 370);
-            btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(114, 28);
-            btnDelete.TabIndex = 1;
-            btnDelete.Text = "Delete";
-            btnDelete.UseVisualStyleBackColor = true;
-            btnDelete.Click += BtnDelete_Click;
+            btnBackup.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btnBackup.Location = new Point(385, 25);
+            btnBackup.Name = "btnBackup";
+            btnBackup.Size = new Size(114, 28);
+            btnBackup.TabIndex = 2;
+            btnBackup.Text = "Backup";
+            btnBackup.UseVisualStyleBackColor = true;
+            btnBackup.Click += BtnBackup_Click;
             // 
             // btnRestore
             // 
-            btnRestore.BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
             btnRestore.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
-            btnRestore.Location = new Point(436, 367);
+            btnRestore.Location = new Point(505, 25);
             btnRestore.Name = "btnRestore";
             btnRestore.Size = new Size(114, 28);
-            btnRestore.TabIndex = 2;
+            btnRestore.TabIndex = 3;
             btnRestore.Text = "Restore";
             btnRestore.UseVisualStyleBackColor = true;
             btnRestore.Click += BtnRestore_Click;
@@ -84,51 +76,43 @@
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(12, 102);
+            dataGridView1.Location = new Point(12, 70);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(577, 244);
-            dataGridView1.TabIndex = 3;
+            dataGridView1.Size = new Size(607, 350);
+            dataGridView1.TabIndex = 4;
             // 
             // txtenterid
             // 
-            txtenterid.Location = new Point(136, 375);
+            txtenterid.Location = new Point(136, 30);
             txtenterid.Name = "txtenterid";
             txtenterid.Size = new Size(123, 23);
-            txtenterid.TabIndex = 4;
+            txtenterid.TabIndex = 0;
             // 
             // lblID
             // 
             lblID.AutoSize = true;
             lblID.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblID.Location = new Point(30, 377);
+            lblID.Location = new Point(30, 32);
             lblID.Name = "lblID";
             lblID.Size = new Size(69, 18);
             lblID.TabIndex = 5;
-            lblID.Text = "Enter ID";
-            // 
-            // textBox1
-            // 
-            textBox1.Location = new Point(30, 50);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(364, 23);
-            textBox1.TabIndex = 6;
+            lblID.Text = "User ID:";
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackgroundImage = Properties.Resources.Screenshot_2026_05_27_222906;
-            ClientSize = new Size(613, 432);
-            Controls.Add(textBox1);
+            ClientSize = new Size(631, 432);
             Controls.Add(lblID);
             Controls.Add(txtenterid);
             Controls.Add(dataGridView1);
             Controls.Add(btnRestore);
-            Controls.Add(btnDelete);
-            Controls.Add(btnLoad);
-            Icon = (Icon)resources.GetObject("$this.Icon");
+            Controls.Add(btnBackup);
+            Controls.Add(btnSearch);
             Name = "Form1";
+            Text = "Database Manager";
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -138,12 +122,11 @@
 
         private OpenFileDialog openFileDialog1;
         private SaveFileDialog saveFileDialog1;
-        private Button btnLoad;
-        private Button btnDelete;
+        private Button btnSearch;
+        private Button btnBackup;
         private Button btnRestore;
         private DataGridView dataGridView1;
         private TextBox txtenterid;
         private Label lblID;
-        private TextBox textBox1;
     }
 }
