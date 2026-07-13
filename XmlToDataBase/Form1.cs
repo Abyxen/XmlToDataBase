@@ -1,17 +1,17 @@
 using MySql.Data.MySqlClient;
 using System;
 using System.Data;
-using System.IO;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace XmlToDataBase
 {
     public partial class Form1 : Form
     {
+        // Ligação à base de dados MySQL
         private string connectionString =
-            "server=localhost;port=3307;user=root;password=aeap2025;database=estagio;";
+            "server=localhost;port=3306;user=root;password=aeap2025;database=user;";
 
+       
         private string backupPath = "backup.xml";
 
         public Form1()
@@ -19,118 +19,153 @@ namespace XmlToDataBase
             InitializeComponent();
         }
 
+       
         private void Form1_Load(object sender, EventArgs e)
         {
             LoadData();
         }
 
-      
-        // LOAD GRID...
-      
+
+        
+
         private void LoadData()
         {
+            // Cria a ligação à base de dados
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
+                
+                conn.Open();
 
-                    string query = "SELECT * FROM user_id";
+                
+                string query = "SELECT * FROM users";
 
-                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
+                
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
+                DataTable dt = new DataTable();
 
-                    adapter.Fill(dt);
+               
+                adapter.Fill(dt);
 
-                    dataGridView1.DataSource = dt;
-                }
+               
+                dataGridView1.DataSource = dt;
             }
             catch (Exception ex)
             {
+                
                 MessageBox.Show("Erro: " + ex.Message);
+            }
+            finally
+            {
+                
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
             }
         }
 
-       
-        // SEARCH 
-    
+
+        // PESQUISAR
+
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-            
+          
             string id = txtenterid.Text.Trim();
 
-            if (string.IsNullOrEmpty(id))
+           
+            if (id == "")
             {
-               
                 LoadData();
                 return;
             }
 
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+               
+                conn.Open();
+
+               
+                string query = "SELECT * FROM users WHERE userid = @id";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+              
+                cmd.Parameters.AddWithValue("@id", id);
+
+                
+                MySqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
                 {
-                    conn.Open();
-
-                    string query =
-                        "SELECT * FROM user_id WHERE iduser_id = @id";
-
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", id);
-
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                MessageBox.Show(
-                                    "ID: " + reader["iduser_id"].ToString(),
-                                    "Resultado da Pesquisa"
-                                );
-                            }
-                            else
-                            {
-                                MessageBox.Show("Utilizador não encontrado.");
-                            }
-                        }
-                    }
+                    
+                    MessageBox.Show("ID: " + reader["userid"].ToString(), "Resultado da Pesquisa");
                 }
+                else
+                {
+                    
+                    MessageBox.Show("Utilizador não encontrado.");
+                }
+
+                reader.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Erro: " + ex.Message);
             }
+            finally
+            {
+                
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
         }
 
-    
-        // BACKUP XML
-    
+
+        // CRIAR BACKUP EM XML
+
         private void BtnBackup_Click(object sender, EventArgs e)
         {
+            BackUp backup = new BackUp (2, connectionString);
+            /*var x = backup.GetTableColumns("users");*/
+            var w = backup.GetXmlBackup();
+            int y = 0; 
+
+           
+            
+            //Janela para escolher onde guardar o ficheiro xml backup*//
+            /*
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "XML (*.xml)|*.xml";
+            sfd.FileName = "Backup.xml";
+
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
             try
             {
-                SaveFileDialog sfd = new SaveFileDialog();
-                sfd.Filter = "XML (*.xml)|*.xml";
-                sfd.FileName = "Backup.xml";
 
-                if (sfd.ShowDialog() != DialogResult.OK)
-                    return;
+                conn.Open();
 
+
+                string query = "SELECT * FROM users";
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
                 DataTable dt = new DataTable();
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    conn.Open();
 
-                    string query = "SELECT * FROM user_id";
+                dt.TableName = "users";
 
-                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, conn);
-                    adapter.Fill(dt);
-                }
+
+                adapter.Fill(dt);
+
 
                 DataSet ds = new DataSet("dados");
-                dt.TableName = "user_id";
                 ds.Tables.Add(dt);
+
 
                 ds.WriteXml(sfd.FileName);
 
@@ -140,56 +175,143 @@ namespace XmlToDataBase
             {
                 MessageBox.Show("Erro backup: " + ex.Message);
             }
+            finally
+            {
+
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }*/
         }
 
-        // RESTORE XML
-      
+
+
+        // RESTAURAR O BACKUP XML
+
         private void BtnRestore_Click(object sender, EventArgs e)
         {
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
             try
             {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "XML (*.xml)|*.xml";
-
-                if (ofd.ShowDialog() != DialogResult.OK)
-                    return;
-
+                
                 DataSet ds = new DataSet();
-                ds.ReadXml(ofd.FileName);
+                ds.ReadXml(backupPath);
 
-                if (ds.Tables.Count == 0)
-                {
-                    MessageBox.Show("Backup vazio.");
-                    return;
-                }
-
+                
                 DataTable dt = ds.Tables[0];
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+              
+                conn.Open();
+
+                
+                foreach (DataRow row in dt.Rows)
                 {
-                    conn.Open();
+                    string query =
+                        @"INSERT INTO users (userid)
+                          VALUES (@id)
+                          ON DUPLICATE KEY UPDATE userid = @id";
 
-                    foreach (DataRow row in dt.Rows)
-                    {
-                        string query =
-                            @"INSERT INTO user_id (iduser_id)
-                              VALUES (@id)
-                              ON DUPLICATE KEY UPDATE iduser_id=@id;";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
 
-                        using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                        {
-                            cmd.Parameters.AddWithValue("@id", row["iduser_id"]);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                   
+                    cmd.Parameters.AddWithValue("@id", row["userid"]);
+
+                   
+                    cmd.ExecuteNonQuery();
                 }
 
-                LoadData();
                 MessageBox.Show("Restaurado com sucesso.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erro restore: " + ex.Message);
+                MessageBox.Show("Erro: " + ex.Message);
+            }
+            finally
+            {
+                
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
+
+            
+            LoadData();
+        }
+
+
+        // ELIMINAR UTILIZADOR
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+           
+            string id = txtenterid.Text.Trim();
+
+            if (id == "")
+            {
+                MessageBox.Show("Introduza um ID.");
+                return;
+            }
+
+            MySqlConnection conn = new MySqlConnection(connectionString);
+
+            
+            bool deleted = false;
+
+            try
+            {
+               
+                conn.Open();
+
+               
+                string selectQuery = "SELECT * FROM users WHERE userid = @id";
+
+                MySqlCommand selectCmd = new MySqlCommand(selectQuery, conn);
+                selectCmd.Parameters.AddWithValue("@id", id);
+
+               
+                MySqlDataAdapter adapter = new MySqlDataAdapter(selectCmd);
+                DataTable dt = new DataTable();
+
+                adapter.Fill(dt);
+
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show("Utilizador não encontrado.");
+                }
+                else
+                {
+                    
+                    dt.TableName = "users";
+                    DataSet ds = new DataSet();
+                    ds.Tables.Add(dt);
+                    ds.WriteXml(backupPath);
+
+                    // Elimina o utilizador
+                    string deleteQuery = "DELETE FROM users WHERE userid = @id";
+
+                    MySqlCommand deleteCmd = new MySqlCommand(deleteQuery, conn);
+                    deleteCmd.Parameters.AddWithValue("@id", id);
+
+                    deleteCmd.ExecuteNonQuery();
+
+                    deleted = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro: " + ex.Message);
+            }
+            finally
+            {
+               
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
+
+           
+            if (deleted)
+            {
+                LoadData();
+                MessageBox.Show("Utilizador eliminado.");
             }
         }
     }

@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
             btnSearch = new Button();
@@ -37,13 +36,14 @@
             dataGridView1 = new DataGridView();
             txtenterid = new TextBox();
             lblID = new Label();
+            btndelete = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // btnSearch
             // 
             btnSearch.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
-            btnSearch.Location = new Point(265, 25);
+            btnSearch.Location = new Point(180, 25);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(114, 28);
             btnSearch.TabIndex = 1;
@@ -84,26 +84,38 @@
             // 
             // txtenterid
             // 
-            txtenterid.Location = new Point(136, 30);
+            txtenterid.Location = new Point(88, 30);
             txtenterid.Name = "txtenterid";
-            txtenterid.Size = new Size(123, 23);
+            txtenterid.Size = new Size(86, 23);
             txtenterid.TabIndex = 0;
             // 
             // lblID
             // 
             lblID.AutoSize = true;
             lblID.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblID.Location = new Point(30, 32);
+            lblID.Location = new Point(12, 30);
             lblID.Name = "lblID";
-            lblID.Size = new Size(69, 18);
+            lblID.Size = new Size(70, 18);
             lblID.TabIndex = 5;
             lblID.Text = "User ID:";
+            // 
+            // btndelete
+            // 
+            btndelete.Font = new Font("Microsoft Sans Serif", 11.25F, FontStyle.Bold);
+            btndelete.Location = new Point(300, 25);
+            btndelete.Name = "btndelete";
+            btndelete.Size = new Size(79, 28);
+            btndelete.TabIndex = 6;
+            btndelete.Text = "Delete";
+            btndelete.UseVisualStyleBackColor = true;
+            btndelete.Click += button1_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(631, 432);
+            Controls.Add(btndelete);
             Controls.Add(lblID);
             Controls.Add(txtenterid);
             Controls.Add(dataGridView1);
@@ -128,5 +140,6 @@
         private DataGridView dataGridView1;
         private TextBox txtenterid;
         private Label lblID;
+        private Button btndelete;
     }
 }
