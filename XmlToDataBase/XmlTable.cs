@@ -4,7 +4,14 @@ using System.Text;
 
 namespace XmlToDataBase
 {
-    internal class XmlTable
+    public class XmlTable
     {
+        public string TableName { get; set; }
+        public List<XmlTableRecord> Records { get; set; }
+
+        public XmlTable()
+        {
+            this.Records = new List<XmlTableRecord>();
+        }
     }
 }

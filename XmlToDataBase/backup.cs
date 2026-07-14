@@ -1,20 +1,13 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using MySql.Data.MySqlClient;
+using System.Xml.Serialization;
 
 namespace XmlToDataBase
 {
 
-    public class TableRecord
-    {
-        public Dictionary<string, string> Data { get; set; }
 
-        public TableRecord()
-        {
-            Data = new Dictionary<string, string>();
-        }
-    }
 
     public class BackUp
     {
@@ -28,10 +21,28 @@ namespace XmlToDataBase
         }
         public string GetXmlBackup()
         {
-            var usersrecords = this.GetTableRecords("users", "association_id = " + _association_id);
 
-            return "";
+            XmlBackup backup = new XmlBackup();
+            backup.AssociationID = _association_id;
+            backup.Tables.Add(new XmlTable { TableName = "users", Records = this.GetTableRecords("users", "association_id = " + _association_id) });
+
+            //   backup.Tables.Add(new XmlTable { TableName = "cars", Records = this.GetTableRecords("cars", "association_id = " + _association_id) });
+
+
+            // gravar a class backup ou xmlBackup em um ficheiro XML
+            XmlSerializer serializer = new XmlSerializer(typeof(XmlBackup));
+
+            string fileName = "backup.xml";
+
+            using (FileStream fs = new FileStream(fileName, FileMode.Create))
+            {
+                serializer.Serialize(fs, backup);
+            }
+
+            return fileName;
+
         }
+
 
 
         private List<string> GetTableColumns(string tableName)
@@ -68,9 +79,9 @@ namespace XmlToDataBase
         }
 
 
-        public List<TableRecord> GetTableRecords(string tableName, string whereClause)
+        public List<XmlTableRecord> GetTableRecords(string tableName, string whereClause)
         {
-            List<TableRecord> result = new List<TableRecord>();
+            List<XmlTableRecord> result = new List<XmlTableRecord>();
 
             try
             {
@@ -92,13 +103,13 @@ namespace XmlToDataBase
                     {
                         while (reader.Read())
                         {
-                            var record = new TableRecord();
+                            var record = new XmlTableRecord();
 
                             foreach (string columnname in tableColumns)
-                       
+
                             {
                                 if (!string.IsNullOrWhiteSpace(columnname))
-                                record.Data.Add(columnname, reader[columnname] != DBNull.Value ? reader[columnname].ToString() : null);
+                                    record.Fields.Add(columnname, reader[columnname] != DBNull.Value ? reader[columnname].ToString() : null);
                             }
                             result.Add(record);
                         }
