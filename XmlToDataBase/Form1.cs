@@ -69,56 +69,42 @@ namespace XmlToDataBase
 
         private void BtnSearch_Click(object sender, EventArgs e)
         {
-          
             string id = txtenterid.Text.Trim();
 
-           
             if (id == "")
             {
                 LoadData();
                 return;
             }
 
-            MySqlConnection conn = new MySqlConnection(connectionString);
-
-            try
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-               
-                conn.Open();
-
-               
-                string query = "SELECT * FROM users WHERE userid = @id";
-
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-
-              
-                cmd.Parameters.AddWithValue("@id", id);
-
-                
-                MySqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
+                try
                 {
-                    
-                    MessageBox.Show("ID: " + reader["userid"].ToString(), "Resultado da Pesquisa");
-                }
-                else
-                {
-                    
-                    MessageBox.Show("Utilizador não encontrado.");
-                }
+                    conn.Open();
 
-                reader.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erro: " + ex.Message);
-            }
-            finally
-            {
-                
-                if (conn.State == ConnectionState.Open)
-                    conn.Close();
+                    string query = "SELECT * FROM users WHERE userid = @id";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+
+                    DataTable table = new DataTable();
+
+                    adapter.Fill(table);
+
+                    dataGridView1.DataSource = table;
+
+                    if (table.Rows.Count == 0)
+                    {
+                        MessageBox.Show("Utilizador não encontrado.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Erro: " + ex.Message);
+                }
             }
         }
 
@@ -189,52 +175,11 @@ namespace XmlToDataBase
 
         private void BtnRestore_Click(object sender, EventArgs e)
         {
-            MySqlConnection conn = new MySqlConnection(connectionString);
+            XmlRestore restore = new XmlRestore(connectionString);
 
-            try
-            {
-                
-                DataSet ds = new DataSet();
-                ds.ReadXml(backupPath);
+            restore.RestoreBackup("backup.xml");
 
-                
-                DataTable dt = ds.Tables[0];
-
-              
-                conn.Open();
-
-                
-                foreach (DataRow row in dt.Rows)
-                {
-                    string query =
-                        @"INSERT INTO users (userid)
-                          VALUES (@id)
-                          ON DUPLICATE KEY UPDATE userid = @id";
-
-                    MySqlCommand cmd = new MySqlCommand(query, conn);
-
-                   
-                    cmd.Parameters.AddWithValue("@id", row["userid"]);
-
-                   
-                    cmd.ExecuteNonQuery();
-                }
-
-                MessageBox.Show("Restaurado com sucesso.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Erro: " + ex.Message);
-            }
-            finally
-            {
-                
-                if (conn.State == ConnectionState.Open)
-                    conn.Close();
-            }
-
-            
-            LoadData();
+            MessageBox.Show("Backup restored.");
         }
 
 

@@ -9,7 +9,7 @@ namespace XmlToDataBase
         public Dictionary<string, string> Fields { get; set; }
         public XmlTableRecord()
         {
-            this.Fields = new Dictionary<string, string>();
+            this.Fields = new Dictionary<string, string> ();
         }
     }
 }
