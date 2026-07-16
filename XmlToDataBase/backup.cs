@@ -1,14 +1,12 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml.Serialization;
 
 namespace XmlToDataBase
 {
-
-
-
     public class BackUp
     {
         private string _connectionString { get; set; }
@@ -19,37 +17,37 @@ namespace XmlToDataBase
             _association_id = associationID;
             _connectionString = connectionString;
         }
-        public string GetXmlBackup()
-        {
 
+        public string GetXmlBackup(string filePath)
+        {
             XmlBackup backup = new XmlBackup();
             backup.AssociationID = _association_id;
-            backup.Tables.Add(new XmlTable { TableName = "users", Records = this.GetTableRecords("users", "association_id = " + _association_id) });
 
-            //   backup.Tables.Add(new XmlTable { TableName = "cars", Records = this.GetTableRecords("cars", "association_id = " + _association_id) });
+            backup.Tables.Add(new XmlTable
+            {
+                TableName = "users",
+                Records = this.GetTableRecords("users", "association_id = " + _association_id)
+            });
 
+            // backup.Tables.Add(new XmlTable
+            // {
+            //     TableName = "cars",
+            //     Records = this.GetTableRecords("cars", "association_id = " + _association_id)
+            // });
 
-            // gravar a class backup ou xmlBackup em um ficheiro XML
             XmlSerializer serializer = new XmlSerializer(typeof(XmlBackup));
 
-            string fileName = "backup.xml";
-
-            using (FileStream fs = new FileStream(fileName, FileMode.Create))
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
                 serializer.Serialize(fs, backup);
             }
 
-            return fileName;
-
+            return filePath;
         }
-
-
 
         private List<string> GetTableColumns(string tableName)
         {
             List<string> result = new List<string>();
-
-
 
             try
             {
@@ -61,6 +59,7 @@ namespace XmlToDataBase
 
                     MySqlCommand command = new MySqlCommand(sql, connection);
                     command.Parameters.AddWithValue("@tableName", tableName);
+
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -78,7 +77,6 @@ namespace XmlToDataBase
             return result;
         }
 
-
         public List<XmlTableRecord> GetTableRecords(string tableName, string whereClause)
         {
             List<XmlTableRecord> result = new List<XmlTableRecord>();
@@ -87,18 +85,21 @@ namespace XmlToDataBase
             {
                 var tableColumns = GetTableColumns(tableName);
 
-                // Constrói o SQL com proteção contra SQL injection
                 string sql = $"SELECT `{string.Join("`, `", tableColumns)}` FROM `{tableName}`";
+
                 if (!string.IsNullOrWhiteSpace(whereClause))
                 {
                     sql += $" WHERE {whereClause}";
                 }
+
                 sql += ";";
 
                 using (var connection = new MySqlConnection(_connectionString))
                 {
                     connection.Open();
+
                     MySqlCommand command = new MySqlCommand(sql, connection);
+
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -106,15 +107,19 @@ namespace XmlToDataBase
                             var record = new XmlTableRecord();
 
                             foreach (string columnname in tableColumns)
-
                             {
                                 if (!string.IsNullOrWhiteSpace(columnname))
-                                    record.Fields.Add(columnname, reader[columnname] != DBNull.Value ? reader[columnname].ToString() : null);
+                                {
+                                    record.Fields.Add(
+                                        columnname,
+                                        reader[columnname] != DBNull.Value ? reader[columnname].ToString() : null
+                                    );
+                                }
                             }
+
                             result.Add(record);
                         }
                     }
-
                 }
             }
             catch (Exception ex)
